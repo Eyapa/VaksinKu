@@ -26,6 +26,15 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'nik' => [
+                'required', 
+                'string', 
+                'size:16', 
+                Rule::unique(User::class)->ignore($this->user()->id),
+                Rule::unique(\App\Models\AnggotaKeluarga::class)->ignore($this->user()->nik, 'nik'),
+            ],
+            'tanggal_lahir' => ['required', 'date'],
+            'jenis_kelamin' => ['required', 'in:L,P'],
         ];
     }
 }

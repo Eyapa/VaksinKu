@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nomor_batch')->nullable();
             $table->string('nama_tenaga_medis')->nullable();
             $table->string('nomor_sertifikat')->nullable()->unique();
-            $table->enum('status', ['selesai', 'pending', 'batal'])->default('pending');
+            $table->enum('status', ['Selesai', 'Memproses', 'Ditolak', 'Dijadwalkan'])->default('Memproses');
             $table->text('catatan')->nullable();
             $table->timestamps();
             $table->softDeletes();

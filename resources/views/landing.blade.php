@@ -124,10 +124,28 @@
                             <x-input-error :messages="$errors->get('password')" class="mt-2" />
                         </div>
 
+                        <div class="flex items-center justify-between">
+                            <label for="remember_me" class="inline-flex items-center cursor-pointer group">
+                                <input id="remember_me" type="checkbox" class="w-5 h-5 rounded border-border-light text-primary focus:ring-primary transition-colors cursor-pointer" name="remember">
+                                <span class="ms-2 text-sm text-on-surface-variant group-hover:text-primary transition-colors">Ingat saya</span>
+                            </label>
+
+                            @if (Route::has('password.request'))
+                                <a class="text-sm font-semibold text-primary hover:text-primary-dark hover:underline transition-colors" href="{{ route('password.request') }}">
+                                    Lupa password?
+                                </a>
+                            @endif
+                        </div>
+
                         <button class="w-full bg-success-green hover:bg-[#0b8a5e] text-white py-4 px-6 rounded-lg font-semibold flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-lg shadow-success-green/20" type="submit">
                             <span class="material-symbols-outlined">login</span>
                             Masuk
                         </button>
+
+                        <div class="mt-6 text-center">
+                            <span class="text-sm text-on-surface-variant">Belum punya akun?</span>
+                            <a href="{{ route('register') }}" class="underline text-sm font-semibold text-primary hover:text-primary-dark ml-1 transition-colors">Daftar sekarang</a>
+                        </div>
                     </form>
                 </div>
             </div>

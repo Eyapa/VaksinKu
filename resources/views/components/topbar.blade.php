@@ -31,13 +31,36 @@
             <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
         </button>
         <div class="h-8 w-px bg-border-light mx-1"></div>
-        <div class="flex items-center gap-3 pl-2 cursor-pointer" onclick="window.location.href='{{ route('profile.edit') }}'">
-            <div class="text-right hidden sm:block">
-                <p class="font-label-md text-label-md text-on-surface">{{ explode(' ', Auth::user()->name)[0] }}</p>
-                <p class="text-label-sm text-on-surface-variant">NIK: {{ substr(Auth::user()->nik ?? '3275000000', 0, 4) }}****</p>
+        <div class="relative" x-data="{ open: false }" @click.outside="open = false">
+            <div class="flex items-center gap-3 pl-2 cursor-pointer" @click="open = !open">
+                <div class="text-right hidden sm:block">
+                    <p class="font-label-md text-label-md text-on-surface">{{ explode(' ', Auth::user()->name)[0] }}</p>
+                    <p class="text-label-sm text-on-surface-variant">NIK: {{ substr(Auth::user()->nik ?? '3275000000', 0, 4) }}****</p>
+                </div>
+                <div class="w-10 h-10 rounded-full border-2 border-primary-container bg-primary flex items-center justify-center text-white font-bold">
+                    {{ substr(Auth::user()->name, 0, 1) }}
+                </div>
             </div>
-            <div class="w-10 h-10 rounded-full border-2 border-primary-container bg-primary flex items-center justify-center text-white font-bold">
-                {{ substr(Auth::user()->name, 0, 1) }}
+
+            <!-- Dropdown Menu -->
+            <div x-show="open" 
+                 x-transition:enter="transition ease-out duration-100" 
+                 x-transition:enter-start="transform opacity-0 scale-95" 
+                 x-transition:enter-end="transform opacity-100 scale-100" 
+                 x-transition:leave="transition ease-in duration-75" 
+                 x-transition:leave-start="transform opacity-100 scale-100" 
+                 x-transition:leave-end="transform opacity-0 scale-95" 
+                 class="absolute right-0 mt-2 w-48 bg-surface border border-border-light rounded-md shadow-lg py-1 z-50" 
+                 style="display: none;">
+                
+                <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-on-surface hover:bg-surface-container transition-colors">Profile</a>
+                
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-danger-red hover:bg-error-container transition-colors">
+                        Logout
+                    </button>
+                </form>
             </div>
         </div>
     </div>

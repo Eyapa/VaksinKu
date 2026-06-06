@@ -43,5 +43,10 @@
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
+
+        <div class="mt-6 text-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400">Belum punya akun?</span>
+            <a href="{{ route('register') }}" class="underline text-sm font-semibold text-primary hover:text-primary-dark">Daftar akun</a>
+        </div>
     </form>
 </x-guest-layout>

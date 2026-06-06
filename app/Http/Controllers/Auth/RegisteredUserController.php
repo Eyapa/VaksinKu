@@ -33,13 +33,31 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'nik' => ['required', 'string', 'size:16', 'unique:'.User::class.',nik', 'unique:'.\App\Models\AnggotaKeluarga::class.',nik'],
+            'tanggal_lahir' => ['required', 'date'],
+            'jenis_kelamin' => ['required', 'in:L,P'],
+            'hubungan' => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'nik' => $request->nik,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'jenis_kelamin' => $request->jenis_kelamin,
             'password' => Hash::make($request->password),
+        ]);
+
+        $finalHubungan = $request->hubungan === 'Lainnya' ? $request->hubungan_lainnya : $request->hubungan;
+
+        // Auto-create Anggota Keluarga profile for the user
+        $user->anggotaKeluargas()->create([
+            'nama' => $request->name,
+            'nik' => $request->nik,
+            'tanggal_lahir' => $request->tanggal_lahir,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'hubungan' => $finalHubungan,
         ]);
 
         event(new Registered($user));

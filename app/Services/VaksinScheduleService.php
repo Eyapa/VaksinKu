@@ -42,6 +42,24 @@ class VaksinScheduleService
     }
 
     /**
+     * Hitung persentase cakupan vaksinasi untuk satu anggota.
+     */
+    public function hitungCakupanAnggota(AnggotaKeluarga $anggota): float
+    {
+        $vaksinTarget = $this->getVaksinTargetUntukUsia($anggota);
+        $totalTarget = $vaksinTarget->count();
+        
+        if ($totalTarget === 0) return 0.0;
+
+        $totalSelesai = $anggota->riwayatVaksin()
+            ->whereIn('vaksin_id', $vaksinTarget->pluck('id'))
+            ->where('status', 'selesai')
+            ->count();
+
+        return round(($totalSelesai / $totalTarget) * 100, 1);
+    }
+
+    /**
      * Ambil daftar vaksin yang seharusnya diterima berdasarkan usia.
      */
     public function getVaksinTargetUntukUsia(AnggotaKeluarga $anggota): Collection

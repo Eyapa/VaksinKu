@@ -24,6 +24,28 @@
         </div>
 
         <div>
+            <x-input-label for="nik" :value="__('NIK (16 Digit)')" />
+            <x-text-input id="nik" name="nik" type="number" class="mt-1 block w-full [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" :value="old('nik', $user->nik)" required />
+            <x-input-error class="mt-2" :messages="$errors->get('nik')" />
+        </div>
+
+        <div>
+            <x-input-label for="tanggal_lahir" :value="__('Tanggal Lahir')" />
+            <x-text-input id="tanggal_lahir" name="tanggal_lahir" type="date" class="mt-1 block w-full" :value="old('tanggal_lahir', $user->tanggal_lahir)" required />
+            <x-input-error class="mt-2" :messages="$errors->get('tanggal_lahir')" />
+        </div>
+
+        <div>
+            <x-input-label for="jenis_kelamin" :value="__('Jenis Kelamin')" />
+            <select id="jenis_kelamin" name="jenis_kelamin" class="mt-1 block w-full px-3 py-2 rounded-md border border-border-light shadow-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface bg-white" required>
+                <option value="" disabled {{ old('jenis_kelamin', $user->jenis_kelamin) ? '' : 'selected' }}>Pilih jenis kelamin...</option>
+                <option value="L" {{ old('jenis_kelamin', $user->jenis_kelamin) === 'L' ? 'selected' : '' }}>Laki-laki</option>
+                <option value="P" {{ old('jenis_kelamin', $user->jenis_kelamin) === 'P' ? 'selected' : '' }}>Perempuan</option>
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('jenis_kelamin')" />
+        </div>
+
+        <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
