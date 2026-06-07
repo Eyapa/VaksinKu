@@ -21,13 +21,15 @@ class FasilitasKesehatan extends Model
         'is_active' => 'boolean',
     ];
 
-    public function riwayatVaksin()
-    {
-        return $this->hasMany(RiwayatVaksin::class, 'faskes_id');
-    }
-
     public function jadwalVaksin()
     {
         return $this->hasMany(JadwalVaksin::class, 'faskes_id');
+    }
+
+    public function vaksins()
+    {
+        return $this->belongsToMany(Vaksin::class, 'fasilitas_vaksins', 'faskes_id', 'vaksin_id')
+                    ->withPivot('status')
+                    ->withTimestamps();
     }
 }

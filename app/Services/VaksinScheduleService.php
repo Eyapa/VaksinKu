@@ -3,7 +3,6 @@ namespace App\Services;
 
 use App\Models\AnggotaKeluarga;
 use App\Models\JadwalVaksin;
-use App\Models\RiwayatVaksin;
 use App\Models\User;
 use App\Models\Vaksin;
 use Carbon\Carbon;
@@ -17,7 +16,7 @@ class VaksinScheduleService
     public function hitungCakupanKeluarga(User $user): float
     {
         $anggotaList = $user->anggotaKeluargas()
-            ->with('riwayatVaksin')
+            ->with('jadwalVaksin')
             ->get();
 
         if ($anggotaList->isEmpty()) {
@@ -30,7 +29,7 @@ class VaksinScheduleService
         foreach ($anggotaList as $anggota) {
             $vaksinTarget = $this->getVaksinTargetUntukUsia($anggota);
             $totalTarget  += $vaksinTarget->count();
-            $totalSelesai += $anggota->riwayatVaksin()
+            $totalSelesai += $anggota->jadwalVaksin()
                 ->whereIn('vaksin_id', $vaksinTarget->pluck('id'))
                 ->where('status', 'selesai')
                 ->count();
@@ -51,9 +50,9 @@ class VaksinScheduleService
         
         if ($totalTarget === 0) return 0.0;
 
-        $totalSelesai = $anggota->riwayatVaksin()
+        $totalSelesai = $anggota->jadwalVaksin()
             ->whereIn('vaksin_id', $vaksinTarget->pluck('id'))
-            ->where('status', 'selesai')
+            ->where('status', 'Selesai')
             ->count();
 
         return round(($totalSelesai / $totalTarget) * 100, 1);
@@ -77,19 +76,19 @@ class VaksinScheduleService
     /**
      * Catat vaksin baru dan generate nomor sertifikat.
      */
-    public function catatVaksin(array $data): RiwayatVaksin
+    public function catatVaksin(array $data): JadwalVaksin
     {
         $data['nomor_sertifikat'] = $this->generateNomorSertifikat();
-        $data['status']           = 'selesai';
+        $data['status']           = 'Selesai';
 
-        return RiwayatVaksin::create($data);
+        return JadwalVaksin::create($data);
     }
 
     private function generateNomorSertifikat(): string
     {
         do {
-            $nomor = 'VK-' . strtoupper(uniqid());
-        } while (RiwayatVaksin::where('nomor_sertifikat', $nomor)->exists());
+            $nomor = 'VKS-' . strtoupper(Str::random(10));
+        } while (JadwalVaksin::where('nomor_sertifikat', $nomor)->exists());
 
         return $nomor;
     }

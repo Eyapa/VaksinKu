@@ -20,7 +20,7 @@ class StoreKeluargaRequest extends FormRequest
             'hubungan' => ['required', 'in:kepala_keluarga,istri,anak,orang_tua,lainnya'],
             'tanggal_lahir' => ['required', 'date', 'before_or_equal:today'],
             'jenis_kelamin' => ['required', 'in:L,P'],
-            'no_kartu_vaksin' => ['nullable', 'string'],
+            'hubungan_lainnya' => ['nullable', 'string', 'required_if:hubungan,lainnya'],
         ];
     }
 }

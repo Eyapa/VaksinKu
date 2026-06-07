@@ -3,9 +3,9 @@
         <div class="flex items-center gap-4">
             <h2 class="font-headline-sm text-headline-sm text-primary">Jadwal Imunisasi</h2>
         </div>
-        <button class="bg-primary text-white px-4 py-2 rounded-lg font-bold hover:bg-primary-container transition-colors flex items-center gap-2">
+        <a href="{{ route('cari') }}" class="bg-primary text-white px-4 py-2 rounded-lg font-bold hover:bg-primary-container transition-colors flex items-center gap-2">
             <span class="material-symbols-outlined text-sm">edit_calendar</span> Tambah Jadwal
-        </button>
+        </a>
     </div>
 
     <div class="bg-surface-container-lowest p-6 rounded-xl border border-border-light shadow-sm">
@@ -23,7 +23,19 @@
             </div>
             <div class="mt-4 md:mt-0 flex items-center gap-4">
                 <x-status-badge :status="$jadwal->status" />
-                <button class="text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" title="Edit Jadwal">
+                <button class="open-modal-btn text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" title="Edit Jadwal"
+                    data-config="{{ json_encode([
+                        'actionUrl' => route('jadwal.update', $jadwal->id),
+                        'method' => 'PUT',
+                        'faskesNama' => $jadwal->faskes->nama,
+                        'faskesAlamat' => $jadwal->faskes->alamat ?? $jadwal->faskes->kota,
+                        'faskesId' => $jadwal->faskes->id,
+                        'vaksins' => $jadwal->faskes->vaksins->map(fn($v) => ['id' => $v->id, 'nama' => $v->nama, 'pivot' => ['status' => $v->pivot->status ?? 'Tersedia']]),
+                        'vaksinId' => $jadwal->vaksin->id,
+                        'anggotaId' => $jadwal->anggotaKeluarga->id,
+                        'tanggal' => $jadwal->tanggal_jadwal->format('Y-m-d'),
+                        'jam' => $jadwal->jam_mulai
+                    ]) }}">
                     <span class="material-symbols-outlined text-sm">edit</span>
                 </button>
             </div>
@@ -38,4 +50,22 @@
             </div>
         @endif
     </div>
+
+    <!-- Gunakan Auth::user() untuk mendapat anggota keluarga -->
+    <x-registration-modal :anggotaKeluargas="Auth::user()->anggotaKeluargas" />
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.open-modal-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const config = JSON.parse(this.dataset.config);
+                    if (window.openRegistrationModal) {
+                        window.openRegistrationModal(config);
+                    }
+                });
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

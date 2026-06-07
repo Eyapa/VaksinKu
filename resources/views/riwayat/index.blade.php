@@ -5,10 +5,10 @@
             <h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Riwayat Vaksinasi</h2>
             <p class="font-body-md text-body-md text-on-surface-variant">Pantau jadwal dan riwayat vaksinasi seluruh anggota keluarga Anda.</p>
         </div>
-        <button class="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm active:scale-95">
+        <a href="{{ route('cari') }}" class="flex items-center justify-center gap-2 px-6 py-3 bg-primary text-on-primary rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-all shadow-sm active:scale-95">
             <span class="material-symbols-outlined">add</span>
-            <span>Tambah Riwayat</span>
-        </button>
+            <span>Daftar Vaksin</span>
+        </a>
     </div>
 
     <!-- Navigation Tabs -->
@@ -150,7 +150,7 @@
                 $status = $item->status;
                 
                 // Determine colors and icons based on status
-                if ($isJadwal || $status === 'Terdaftar' || $status === 'Dijadwalkan') {
+                if ($isJadwal || $status === 'Terdaftar') {
                     $statusColor = 'warning-orange';
                     $statusBg = 'bg-warning-orange/20';
                     $icon = 'schedule';
@@ -160,7 +160,7 @@
                     $statusBg = 'bg-success-green/20';
                     $icon = 'check_circle';
                     $stripe = 'status-stripe-success';
-                } elseif ($status === 'Memproses') {
+                } elseif ($status === 'Konfirmasi') {
                     $statusColor = 'info-cyan';
                     $statusBg = 'bg-info-cyan/20';
                     $icon = 'sync';
@@ -206,38 +206,55 @@
                         </div>
                         
                             <div class="flex flex-wrap gap-3 items-center self-start md:mt-2">
-                                @if($isJadwal)
-                                    <button class="px-6 py-2.5 border-2 border-border-light text-primary hover:bg-primary-container hover:text-primary-dark rounded-xl font-bold text-sm transition-all active:scale-95 whitespace-nowrap">
+                                @if($isJadwal || $status === 'Terdaftar' || $status === 'Terjadwal')
+                                    <button class="open-modal-btn px-6 py-2.5 border-2 border-border-light text-primary hover:bg-primary-container hover:text-primary-dark rounded-xl font-bold text-sm transition-all active:scale-95 whitespace-nowrap"
+                                        data-config="{{ json_encode([
+                                            'actionUrl' => route('jadwal.update', $item->model_id),
+                                            'method' => 'PUT',
+                                            'faskesNama' => $item->faskes->nama,
+                                            'faskesAlamat' => $item->faskes->alamat ?? $item->faskes->kota,
+                                            'faskesId' => $item->faskes->id,
+                                            'vaksins' => $item->faskes->vaksins->map(fn($v) => ['id' => $v->id, 'nama' => $v->nama, 'pivot' => ['status' => $v->pivot->status ?? 'Tersedia']]),
+                                            'vaksinId' => $item->vaksin->id,
+                                            'anggotaId' => $item->anggota->id,
+                                            'tanggal' => $item->tanggal,
+                                            'jam' => $item->jadwalModel->jam_mulai
+                                        ]) }}">
                                         Ubah Jadwal
                                     </button>
-                                @elseif($status === 'Memproses')
-                                    <button class="px-6 py-2.5 border-2 border-border-light text-primary hover:bg-primary-container hover:text-primary-dark rounded-xl font-bold text-sm transition-all active:scale-95 whitespace-nowrap">
-                                        Edit
-                                    </button>
-                                    <form method="POST" action="{{ route('riwayat.destroy', $item->model_id) }}" id="cancel-riwayat-{{ $item->model_id }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="px-6 py-2.5 border border-danger-red text-danger-red hover:bg-danger-red/10 rounded-xl font-bold text-sm transition-all active:scale-95 whitespace-nowrap"
-                                                onclick="
-                                                Swal.fire({
-                                                    title: 'Batalkan Pengajuan?',
-                                                    text: 'Pengajuan riwayat vaksin ini akan dibatalkan!',
-                                                    icon: 'warning',
-                                                    showCancelButton: true,
-                                                    confirmButtonColor: '#E02424',
-                                                    cancelButtonColor: '#1E3A5F',
-                                                    confirmButtonText: 'Ya, batalkan!',
-                                                    cancelButtonText: 'Kembali'
-                                                }).then((result) => {
-                                                    if (result.isConfirmed) {
-                                                        document.getElementById('cancel-riwayat-{{ $item->model_id }}').submit();
-                                                    }
-                                                });">
-                                            Batalkan
+                                    <x-dropdown align="right" width="48">
+                                    <x-slot name="trigger">
+                                        <button class="p-2 text-outline hover:text-primary transition-colors">
+                                            <span class="material-symbols-outlined">more_vert</span>
                                         </button>
-                                    </form>
+                                    </x-slot>
+                                    <x-slot name="content">
+                                        <form method="POST" action="{{ route('riwayat.destroy', $item->model_id) }}" id="delete-riwayat-{{ $item->model_id }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="block w-full px-4 py-2 text-start text-body-md text-danger-red hover:bg-error-container hover:text-on-error-container focus:outline-none transition"
+                                                    onclick="
+                                                    Swal.fire({
+                                                        title: 'Hapus Riwayat?',
+                                                        text: 'Riwayat ini akan dihapus permanen!',
+                                                        icon: 'warning',
+                                                        showCancelButton: true,
+                                                        confirmButtonColor: '#E02424',
+                                                        cancelButtonColor: '#1E3A5F',
+                                                        confirmButtonText: 'Ya, hapus!',
+                                                        cancelButtonText: 'Batal'
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            document.getElementById('delete-riwayat-{{ $item->model_id }}').submit();
+                                                        }
+                                                    });">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </x-slot>
+                                    </x-dropdown>
                                 @elseif($status === 'Selesai')
-                                    <button @click="$dispatch('open-certificate', { url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' })" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-sm transition-all hover:bg-primary-dark active:scale-95 whitespace-nowrap">
+                                    <button @click="$dispatch('open-certificate', { url: ' {{ $item->file_sertifikat_url }} ' })" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl font-bold text-sm transition-all hover:bg-primary-dark active:scale-95 whitespace-nowrap">
                                         <span class="material-symbols-outlined text-[18px]">download</span> Lihat Sertifikat
                                     </button>
                                     
@@ -272,8 +289,8 @@
                                             </button>
                                         </form>
                                     </x-slot>
-                                </x-dropdown>
-                            @elseif($status === 'Ditolak')
+                                    </x-dropdown>
+                            @elseif($status === 'Batal')
                                 <!-- Ditolak dll -->
                                 <x-dropdown align="right" width="48">
                                     <x-slot name="trigger">
@@ -317,5 +334,21 @@
             @endforelse
         </div>
     </div>
+    <x-registration-modal :anggotaKeluargas="Auth::user()->anggotaKeluargas" />
+    
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.open-modal-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const config = JSON.parse(this.dataset.config);
+                    if (window.openRegistrationModal) {
+                        window.openRegistrationModal(config);
+                    }
+                });
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>
 

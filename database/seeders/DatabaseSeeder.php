@@ -17,7 +17,9 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             VaksinSeeder::class,
             FaskesSeeder::class,
+            FasilitasVaksinSeeder::class,
             DummyVaksinSeeder::class,
+            PengumumanSeeder::class,
         ]);
     }
 }

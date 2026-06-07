@@ -1,0 +1,405 @@
+<!DOCTYPE html><html lang="id"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Cari Jadwal Vaksinasi - VaksinKu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #E5E7EB;
+            border-radius: 10px;
+        }
+        .map-gradient-overlay {
+            background: linear-gradient(to bottom, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "danger-red": "#E02424",
+                        "surface-variant": "#e2e1ed",
+                        "on-tertiary-container": "#ffd4c5",
+                        "border-light": "#E5E7EB",
+                        "tertiary": "#852b00",
+                        "surface-dim": "#d9d9e4",
+                        "inverse-on-surface": "#f0f0fb",
+                        "secondary-fixed-dim": "#adc8f5",
+                        "on-secondary-container": "#3e5980",
+                        "on-secondary-fixed-variant": "#2d486d",
+                        "surface-container-high": "#e7e7f3",
+                        "info-cyan": "#3ABFF8",
+                        "tertiary-fixed": "#ffdbcf",
+                        "inverse-primary": "#b5c4ff",
+                        "secondary": "#455f87",
+                        "tertiary-fixed-dim": "#ffb59a",
+                        "on-primary-fixed": "#00174d",
+                        "primary-fixed": "#dbe1ff",
+                        "outline": "#737686",
+                        "on-primary-fixed-variant": "#003dab",
+                        "surface-tint": "#1353d8",
+                        "on-primary-container": "#d4dcff",
+                        "on-background": "#191b23",
+                        "success-green": "#0E9F6E",
+                        "background": "#faf8ff",
+                        "primary-fixed-dim": "#b5c4ff",
+                        "primary": "#003fb1",
+                        "tertiary-container": "#ad3b00",
+                        "primary-container": "#1a56db",
+                        "on-surface-variant": "#434654",
+                        "surface": "#faf8ff",
+                        "surface-container": "#ededf8",
+                        "on-secondary-fixed": "#001c3b",
+                        "inverse-surface": "#2e3039",
+                        "surface-bright": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#b5d0fd",
+                        "warning-orange": "#FF5A1F",
+                        "on-tertiary-fixed": "#380d00",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191b23",
+                        "outline-variant": "#c3c5d7",
+                        "bg-subtle": "#F9FAFB",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#802a00",
+                        "surface-container-highest": "#e2e1ed",
+                        "secondary-fixed": "#d5e3ff",
+                        "surface-container-low": "#f3f3fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "1.5rem",
+                        "stack-sm": "0.5rem",
+                        "stack-lg": "1.5rem",
+                        "margin-page": "2rem",
+                        "sidebar-width": "220px",
+                        "stack-md": "1rem",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "label-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-[220px] border-r border-border-light bg-surface-container-lowest z-50 flex flex-col py-6 px-4">
+<div class="mb-10 px-2">
+<h1 class="text-headline-md font-headline-md font-bold text-primary">VaksinKu</h1>
+<p class="text-label-sm text-on-surface-variant">Layanan Kesehatan Desa</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-md text-label-md">Beranda</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-label-md text-label-md">Cari Vaksin</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-md text-label-md">Riwayat</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Keluarga</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-label-md text-label-md">Pengumuman</span>
+</a>
+</nav>
+<div class="border-t border-border-light pt-4 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-colors duration-200 rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-label-md text-label-md">Bantuan</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-colors duration-200 rounded-lg text-error" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-label-md text-label-md">Keluar</span>
+</a>
+</div>
+</aside>
+<!-- Top Bar -->
+<header class="fixed top-0 right-0 w-[calc(100%-220px)] h-16 bg-surface border-b border-border-light z-40 px-gutter flex justify-between items-center">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-border-light rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-body-sm" placeholder="Cari layanan kesehatan..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="flex items-center gap-3 pl-4 border-l border-border-light">
+<div class="text-right">
+<p class="font-label-md text-label-md text-on-surface">Pak Budi</p>
+<p class="text-label-sm text-on-surface-variant">Kepala Keluarga</p>
+</div>
+<img alt="Avatar" class="w-10 h-10 rounded-full border-2 border-primary-container object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoMYSBOroCA0UOX8lRNJhmnUn2Pt-VO8RKBpmh4sAxYHrKokVA72qZ0nyX4QFDZSO-WJQJrJ9Z76joH0WR6JdzjbVGYDiNZdbJ61x-RBoJUFOY01dMJHeqNTz1WYAwX2TBHF-nFDw0R1eDGWLfYugyuKgoSICOdC-7Z4MRe6O-R5pr5sH19Tacj3UDuL3QQo0_Cna7SnLx9l05HaQIUIpjl9yFmnVLYURKB5iA55AML6ShO9-MsBYYK2jSYzphho8UgoRtrYU_vS9y">
+</div>
+</div>
+</header>
+<!-- Main Content Layout -->
+<main class="ml-[220px] pt-16 h-screen flex">
+<!-- Left Panel: Filter & Results (40%) -->
+<section class="w-2/5 h-full flex flex-col border-r border-border-light bg-surface-bright">
+<div class="p-6 border-b border-border-light">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-1">Cari Jadwal Vaksinasi</h2>
+<p class="text-body-sm text-on-surface-variant mb-6">Temukan Puskesmas atau Posyandu terdekat untuk jadwal vaksinasi keluarga Anda.</p>
+<!-- Filter Section -->
+<div class="grid grid-cols-1 gap-4">
+<div class="space-y-1">
+<label class="text-label-sm text-on-surface-variant ml-1">Lokasi atau Nama Faskes</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">location_on</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-white border border-border-light rounded-lg focus:ring-primary text-body-sm" type="text" value="Sukamaju, Bandung Barat">
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="text-label-sm text-on-surface-variant ml-1">Jenis Vaksin</label>
+<select class="w-full px-3 py-2.5 bg-white border border-border-light rounded-lg focus:ring-primary text-body-sm">
+<option>Semua Jenis</option>
+<option>COVID-19</option>
+<option>Polio (nOPV2)</option>
+<option>BCG</option>
+<option>DPT-HB-Hib</option>
+</select>
+</div>
+<div class="space-y-1">
+<label class="text-label-sm text-on-surface-variant ml-1">Jarak Maksimum</label>
+<select class="w-full px-3 py-2.5 bg-white border border-border-light rounded-lg focus:ring-primary text-body-sm">
+<option>5 km</option>
+<option>10 km</option>
+<option>20 km</option>
+</select>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-2.5 rounded-lg font-label-md hover:bg-opacity-90 transition-all active:scale-[0.98] flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                        Cari Sekarang
+                    </button>
+</div>
+</div>
+<!-- Results List -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-label-md text-label-md text-on-surface">Hasil Pencarian (12)</h3>
+<div class="flex items-center gap-1 text-primary cursor-pointer hover:underline">
+<span class="material-symbols-outlined text-[16px]">filter_list</span>
+<span class="text-label-sm">Terdekat</span>
+</div>
+</div>
+<!-- Card 1 -->
+<div class="bg-white border-l-4 border-l-success-green rounded-xl border border-border-light p-4 hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">medical_services</span>
+<h4 class="font-label-md text-on-surface group-hover:text-primary transition-colors">Puskesmas Desa Sukajaya</h4>
+</div>
+<span class="px-2 py-1 bg-success-green/10 text-success-green text-[10px] font-bold rounded uppercase">Tersedia</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-3">Jl. Merdeka No. 45, Sukajaya</p>
+<div class="flex items-center gap-4 text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">near_me</span>
+                            1.2 km
+                        </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                            Besok, 08:00 - 12:00
+                        </div>
+</div>
+<button class="w-full mt-4 py-2 border border-primary text-primary rounded-lg font-label-md hover:bg-primary hover:text-white transition-colors">Daftar Sekarang</button>
+</div>
+<!-- Card 2 -->
+<div class="bg-white border-l-4 border-l-warning-orange rounded-xl border border-border-light p-4 hover:shadow-md transition-shadow cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">location_away</span>
+<h4 class="font-label-md text-on-surface group-hover:text-primary transition-colors">Posyandu Melati 02</h4>
+</div>
+<span class="px-2 py-1 bg-warning-orange/10 text-warning-orange text-[10px] font-bold rounded uppercase">Hampir Penuh</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-3">Balai Desa Kebonjati</p>
+<div class="flex items-center gap-4 text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">near_me</span>
+                            2.8 km
+                        </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                            Kamis, 09:00 - 11:00
+                        </div>
+</div>
+<button class="w-full mt-4 py-2 border border-primary text-primary rounded-lg font-label-md hover:bg-primary hover:text-white transition-colors">Daftar Sekarang</button>
+</div>
+<!-- Card 3 -->
+<div class="bg-white border-l-4 border-l-success-green rounded-xl border border-border-light p-4 hover:shadow-md transition-shadow cursor-pointer group opacity-90">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">health_and_safety</span>
+<h4 class="font-label-md text-on-surface group-hover:text-primary transition-colors">Puskesmas Pembantu Indah</h4>
+</div>
+<span class="px-2 py-1 bg-success-green/10 text-success-green text-[10px] font-bold rounded uppercase">Tersedia</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-3">Kecamatan Sari Jadi</p>
+<div class="flex items-center gap-4 text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">near_me</span>
+                            4.5 km
+                        </div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                            Jumat, 08:00 - 15:00
+                        </div>
+</div>
+<button class="w-full mt-4 py-2 border border-primary text-primary rounded-lg font-label-md hover:bg-primary hover:text-white transition-colors">Daftar Sekarang</button>
+</div>
+</div>
+</section>
+<!-- Right Panel: Map Interface (60%) -->
+<section class="w-3/5 h-full relative bg-surface-container overflow-hidden">
+<div class="absolute inset-0 z-0">
+<!-- Using a high-quality map placeholder image -->
+<img class="w-full h-full object-cover" data-alt="A highly detailed 2D professional architectural map illustration of a suburban area with clean minimalist styling. The map features soft light-mode colors like off-white roads, pale blue water bodies, and light green park areas. Modern UI elements such as glowing circular markers and clean navigation paths are overlaid, creating a high-tech healthcare service atmosphere. The lighting is bright and airy, emphasizing a friendly and trustworthy municipal interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMMfzsNJJt-DAuqB3PBvlNGCqlg3gRic7zsZVoD9y4LD3PT0fDr6h1Zy53Md_GOsPhGQ0VnuxdfUiKT6TUYvf1zdz6LrxejrwiKwZ6DtBI3FLmG0mg_RNYNRw4WoNT9GUHqiT-e9pJvki7TlDLbf3ua5SWhtXuPUAoZm1mq0pIxbi7FKAJWhxsgA3oOCNPoIYTLfhI98c3W50VjSgoiXU9edhCvSd2RJTeHsvxR7XMlFjHbv5uFh_-5oyB_rWkIv0qqCo4HLTYBBXh">
+<div class="absolute inset-0 bg-primary/5"></div>
+</div>
+<!-- Map UI Overlays -->
+<div class="absolute top-6 right-6 flex flex-col gap-2 z-10">
+<button class="w-10 h-10 bg-white shadow-lg rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="w-10 h-10 bg-white shadow-lg rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<button class="w-10 h-10 bg-white shadow-lg rounded-lg flex items-center justify-center text-primary mt-4 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">my_location</span>
+</button>
+</div>
+<!-- Interactive Map Pins (Visual Simulation) -->
+<div class="absolute top-[35%] left-[45%] z-20 group cursor-pointer">
+<div class="bg-primary text-white p-2 rounded-full shadow-xl animate-bounce">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+</div>
+<!-- Pin Label -->
+<div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap bg-white px-3 py-1.5 rounded-lg shadow-lg border border-border-light opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+<p class="text-label-sm font-bold text-on-surface">Puskesmas Sukajaya</p>
+<p class="text-[10px] text-success-green">Tersedia Sekarang</p>
+</div>
+</div>
+<div class="absolute top-[55%] left-[30%] z-20 group cursor-pointer">
+<div class="bg-warning-orange text-white p-2 rounded-full shadow-xl">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">location_away</span>
+</div>
+</div>
+<!-- Bottom Map Controls -->
+<div class="absolute bottom-6 left-6 right-6 flex justify-between items-end z-10">
+<div class="bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-lg border border-white/20 max-w-xs">
+<h5 class="text-label-md font-bold text-on-surface mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">info</span>
+                        Panduan Cepat
+                    </h5>
+<ul class="text-[12px] space-y-2 text-on-surface-variant">
+<li class="flex gap-2">
+<span class="font-bold text-primary">1.</span>
+                            Pilih faskes terdekat yang memiliki status <span class="text-success-green font-bold">Tersedia</span>.
+                        </li>
+<li class="flex gap-2">
+<span class="font-bold text-primary">2.</span>
+                            Klik tombol "Daftar Sekarang" untuk memilih anggota keluarga.
+                        </li>
+</ul>
+</div>
+<div class="flex gap-2">
+<div class="bg-white px-4 py-2 rounded-full shadow-lg border border-border-light flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-success-green"></div>
+<span class="text-label-sm text-on-surface">Faskes Tersedia</span>
+</div>
+<div class="bg-white px-4 py-2 rounded-full shadow-lg border border-border-light flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-warning-orange"></div>
+<span class="text-label-sm text-on-surface">Hampir Penuh</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Overlay (Integrated at bottom of left panel) -->
+<footer class="fixed bottom-0 left-[220px] w-2/5 py-4 px-6 border-t border-border-light bg-surface-container-lowest flex justify-between items-center text-body-sm text-on-surface-variant z-40">
+<p class="text-[12px]">© 2024 VaksinKu Healthcare. Layanan Desa Mandiri.</p>
+<div class="flex gap-4 text-[12px]">
+<a class="hover:text-primary transition-colors" href="#">Bantuan</a>
+<a class="hover:text-primary transition-colors" href="#">Privasi</a>
+</div>
+</footer>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.cursor-pointer').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+
+        // Hover effect for map pins simulation
+        const pins = document.querySelectorAll('.animate-bounce');
+        pins.forEach(pin => {
+            pin.parentElement.addEventListener('mouseenter', () => {
+                pin.classList.remove('animate-bounce');
+            });
+            pin.parentElement.addEventListener('mouseleave', () => {
+                pin.classList.add('animate-bounce');
+            });
+        });
+    </script>
+</body></html>

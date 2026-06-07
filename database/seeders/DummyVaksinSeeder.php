@@ -5,9 +5,9 @@ namespace Database\Seeders;
 use App\Models\AnggotaKeluarga;
 use App\Models\FasilitasKesehatan;
 use App\Models\JadwalVaksin;
-use App\Models\RiwayatVaksin;
 use App\Models\Vaksin;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 
 class DummyVaksinSeeder extends Seeder
@@ -62,25 +62,30 @@ class DummyVaksinSeeder extends Seeder
             // Berikan 1-3 riwayat selesai
             $jumlahRiwayat = rand(1, 3);
             for ($i = 0; $i < $jumlahRiwayat; $i++) {
-                RiwayatVaksin::create([
+                JadwalVaksin::create([
                     'anggota_keluarga_id' => $anggota->id,
                     'vaksin_id' => $vaksins->random()->id,
                     'faskes_id' => $faskes->random()->id,
                     'nomor_dosis' => $i + 1,
-                    'tanggal_vaksin' => Carbon::now()->subMonths(rand(1, 24)),
-                    'status' => 'Selesai',
+                    'tanggal_jadwal' => Carbon::now()->subMonths(rand(1, 24)),
+                    'status' => 'selesai',
+                    'nomor_batch' => 'BATCH-' . strtoupper(Str::random(5)),
+                    'nama_tenaga_medis' => 'Dr. ' . fake()->lastName(),
+                    'nomor_sertifikat' => 'VKS-' . strtoupper(Str::random(10)),
+                    'file_sertifikat_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                 ]);
             }
 
             // Berikan 1 riwayat memproses (opsional)
             if (rand(0, 1)) {
-                RiwayatVaksin::create([
+                JadwalVaksin::create([
                     'anggota_keluarga_id' => $anggota->id,
                     'vaksin_id' => $vaksins->random()->id,
                     'faskes_id' => $faskes->random()->id,
                     'nomor_dosis' => 1,
-                    'tanggal_vaksin' => Carbon::now()->subDays(rand(1, 7)),
-                    'status' => 'Memproses',
+                    'tanggal_jadwal' => Carbon::now()->subDays(rand(1, 7)),
+                    'status' => 'konfirmasi',
+                    'file_sertifikat_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                 ]);
             }
 
@@ -93,7 +98,8 @@ class DummyVaksinSeeder extends Seeder
                     'tanggal_jadwal' => Carbon::now()->addDays(rand(1, 30)),
                     'jam_mulai' => '09:00:00',
                     'jam_selesai' => '10:00:00',
-                    'status' => 'Terdaftar',
+                    'status' => 'terdaftar',
+                    'file_sertifikat_url' => 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
                 ]);
             }
         }

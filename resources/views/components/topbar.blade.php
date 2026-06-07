@@ -22,11 +22,11 @@
         </nav>
     </div>
     <div class="flex items-center gap-4">
-        <div class="relative flex items-center bg-surface-container rounded-full px-4 py-1.5 w-64">
+        <div style="display:none;" class="relative flex items-center bg-surface-container rounded-full px-4 py-1.5 w-64">
             <span class="material-symbols-outlined text-outline text-sm">search</span>
             <input class="bg-transparent border-none focus:ring-0 text-body-sm w-full py-0" placeholder="Cari layanan..." type="text">
         </div>
-        <button class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full relative">
+        <button style="display:none;" class="p-2 text-on-surface-variant hover:bg-surface-container rounded-full relative">
             <span class="material-symbols-outlined">notifications</span>
             <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
         </button>

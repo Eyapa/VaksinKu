@@ -2,7 +2,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRiwayatRequest;
-use App\Models\RiwayatVaksin;
 use App\Services\VaksinScheduleService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -53,45 +52,25 @@ class RiwayatController extends Controller
             $anggotaIds = $selectedAnggota ? [$selectedAnggota->id] : [];
         }
 
-        $riwayats = RiwayatVaksin::with(['vaksin', 'faskes', 'anggotaKeluarga'])
-            ->whereIn('anggota_keluarga_id', $anggotaIds)
-            ->get();
-
-        $jadwals = \App\Models\JadwalVaksin::with(['vaksin', 'faskes', 'anggotaKeluarga'])
+        $jadwals = \App\Models\JadwalVaksin::with(['vaksin', 'faskes.vaksins', 'anggotaKeluarga'])
             ->whereIn('anggota_keluarga_id', $anggotaIds)
             ->get();
 
         $timeline = collect();
 
-        foreach($riwayats as $r) {
-            $status = ucfirst($r->status);
-            if (strtolower($r->status) === 'pending') {
-                $status = 'Memproses';
-            } elseif (strtolower($r->status) === 'batal') {
-                $status = 'Ditolak';
-            }
-
-            $timeline->push((object)[
-                'id' => 'r_'.$r->id,
-                'type' => 'riwayat',
-                'model_id' => $r->id,
-                'status' => $status,
-                'vaksin' => $r->vaksin,
-                'faskes' => $r->faskes,
-                'anggota' => $r->anggotaKeluarga,
-                'tanggal' => $r->tanggal_vaksin,
-            ]);
-        }
-
         foreach($jadwals as $j) {
+            $isRiwayat = strtolower($j->status) === 'selesai' || strtolower($j->status) === 'batal';
             $timeline->push((object)[
-                'id' => 'j_'.$j->id,
-                'type' => 'jadwal',
+                'id' => ($isRiwayat ? 'r_' : 'j_').$j->id,
+                'type' => $isRiwayat ? 'riwayat' : 'jadwal',
+                'model_id' => $j->id,
                 'status' => ucfirst($j->status),
                 'vaksin' => $j->vaksin,
                 'faskes' => $j->faskes,
                 'anggota' => $j->anggotaKeluarga,
                 'tanggal' => $j->tanggal_jadwal,
+                'jadwalModel' => $j, // to pass full data
+                'file_sertifikat_url' => $j->file_sertifikat_url,
             ]);
         }
 
@@ -128,18 +107,19 @@ class RiwayatController extends Controller
 
         if ($targetAnggota && isset($targetAnggota->id)) {
             $latestJadwal = \App\Models\JadwalVaksin::where('anggota_keluarga_id', $targetAnggota->id)
-                ->where('tanggal_jadwal', '>=', now()->toDateString())
+                ->whereIn('status', ['terdaftar', 'konfirmasi'])
                 ->orderBy('tanggal_jadwal')
                 ->first();
-            $latestRiwayat = \App\Models\RiwayatVaksin::where('anggota_keluarga_id', $targetAnggota->id)
-                ->orderBy('tanggal_vaksin', 'desc')
+            $latestRiwayat = \App\Models\JadwalVaksin::where('anggota_keluarga_id', $targetAnggota->id)
+                ->where('status', 'selesai')
+                ->orderBy('tanggal_jadwal', 'desc')
                 ->first();
 
             if ($latestJadwal) {
                 $targetAnggota->status_vaksin = 'Dijadwalkan';
                 $targetAnggota->status_color = 'warning-orange';
             } elseif ($latestRiwayat) {
-                if (\Carbon\Carbon::parse($latestRiwayat->tanggal_vaksin)->diffInDays(now()) > 1) {
+                if (\Carbon\Carbon::parse($latestRiwayat->tanggal_jadwal)->diffInDays(now()) > 1) {
                     $targetAnggota->status_vaksin = 'Tidak Ada Jadwal';
                     $targetAnggota->status_color = 'outline';
                 } else {
@@ -155,13 +135,14 @@ class RiwayatController extends Controller
         return view('riwayat.index', [
             'timeline' => $timeline, 
             'persentaseCakupan' => $persentaseCakupan,
-            'totalRiwayat' => $riwayats->count(),
+            'totalRiwayat' => collect($timeline)->where('type', 'riwayat')->count(),
             'tab' => $tab,
             'anggotaId' => $anggotaId,
             'anggotaKeluargaList' => $anggotaKeluargaList,
             'selectedAnggota' => $selectedAnggota,
             'saya' => $saya,
-            'targetAnggota' => $targetAnggota
+            'targetAnggota' => $targetAnggota,
+            'vaksins' => \App\Models\Vaksin::orderBy('nama')->get()
         ]);
     }
 
@@ -176,14 +157,14 @@ class RiwayatController extends Controller
             ->with('success', "Vaksin {$riwayat->vaksin->nama} berhasil dicatat.");
     }
 
-    public function destroy(RiwayatVaksin $riwayat): RedirectResponse
+    public function destroy(\App\Models\JadwalVaksin $riwayat): RedirectResponse
     {
         if ($riwayat->anggotaKeluarga->user_id !== Auth::id()) {
             abort(403);
         }
 
-        if ($riwayat->status === 'Dijadwalkan') {
-            return back()->with('error', 'Status Dijadwalkan tidak dapat dihapus.');
+        if (strtolower($riwayat->status) === 'terdaftar' || strtolower($riwayat->status) === 'konfirmasi') {
+            return back()->with('error', 'Status jadwal tidak dapat dihapus melalui riwayat.');
         }
 
         $riwayat->delete();

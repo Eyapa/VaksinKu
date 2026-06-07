@@ -11,7 +11,8 @@ class JadwalVaksin extends Model
 
     protected $fillable = [
         'anggota_keluarga_id', 'vaksin_id', 'faskes_id', 'tanggal_jadwal', 'jam_mulai',
-        'jam_selesai', 'nomor_antrian', 'status', 'reminder_sent_at'
+        'jam_selesai', 'nomor_antrian', 'status', 'reminder_sent_at',
+        'nomor_dosis', 'nomor_batch', 'nama_tenaga_medis', 'nomor_sertifikat', 'catatan'
     ];
 
     protected $casts = [

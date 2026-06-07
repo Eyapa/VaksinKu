@@ -11,7 +11,7 @@ class AnggotaKeluarga extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'nama', 'nik', 'hubungan', 'tanggal_lahir', 'jenis_kelamin', 'no_kartu_vaksin'
+        'user_id', 'nama', 'nik', 'hubungan', 'hubungan_lainnya', 'tanggal_lahir', 'jenis_kelamin'
     ];
 
     protected $casts = [
@@ -23,9 +23,12 @@ class AnggotaKeluarga extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function riwayatVaksin()
+    public function getPeranLabelAttribute()
     {
-        return $this->hasMany(RiwayatVaksin::class);
+        if ($this->hubungan === 'lainnya' && $this->hubungan_lainnya) {
+            return ucwords($this->hubungan_lainnya);
+        }
+        return str_replace('_', ' ', ucwords($this->hubungan, '_'));
     }
 
     public function jadwalVaksin()

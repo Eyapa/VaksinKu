@@ -17,7 +17,7 @@ return new class extends Migration
             $table->time('jam_mulai')->nullable();
             $table->time('jam_selesai')->nullable();
             $table->string('nomor_antrian')->nullable();
-            $table->enum('status', ['terdaftar', 'konfirmasi', 'selesai', 'batal'])->default('terdaftar');
+            $table->string('status')->default('terdaftar');
             $table->timestamp('reminder_sent_at')->nullable();
             $table->timestamps();
             $table->softDeletes();

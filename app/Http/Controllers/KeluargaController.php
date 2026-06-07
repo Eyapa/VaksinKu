@@ -12,7 +12,7 @@ class KeluargaController extends Controller
     public function index(): View
     {
         $user = Auth::user();
-        $query = $user->anggotaKeluargas()->with(['riwayatVaksin.vaksin', 'jadwalVaksin']);
+        $query = $user->anggotaKeluargas()->with(['jadwalVaksin.vaksin']);
         
         if ($user->nik) {
             $query->where('nik', '!=', $user->nik);
@@ -29,7 +29,7 @@ class KeluargaController extends Controller
         ];
 
         foreach ($keluarga as $anggota) {
-            $latestRiwayat = $anggota->riwayatVaksin->where('status', 'Selesai')->sortByDesc('tanggal_vaksin')->first();
+            $latestRiwayat = $anggota->jadwalVaksin->where('status', 'Selesai')->sortByDesc('tanggal_jadwal')->first();
             $latestJadwal = $anggota->jadwalVaksin->where('tanggal_jadwal', '>=', now()->toDateString())->sortBy('tanggal_jadwal')->first();
             
             $anggota->vaksin_terakhir = $latestRiwayat && $latestRiwayat->vaksin ? $latestRiwayat->vaksin->nama : '-';
