@@ -23,6 +23,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     volumes:
+      - .:/var/www/html
       - app_storage:/var/www/html/storage/app
       - app_logs:/var/www/html/storage/logs
     environment:
@@ -152,6 +153,7 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
       QUEUE_CONNECTION: redis
     volumes:
+      - .:/var/www/html
       - app_storage:/var/www/html/storage/app
       - app_logs:/var/www/html/storage/logs
     networks:
@@ -178,6 +180,7 @@ services:
         sleep 60;
       done"
     volumes:
+      - .:/var/www/html
       - app_storage:/var/www/html/storage/app
       - app_logs:/var/www/html/storage/logs
     networks:
