@@ -1,4 +1,4 @@
-version: '3.9'
+# version: '3.9'
 
 # ═══════════════════════════════════════════════════════════════
 #  VaksinKu — Docker Compose
@@ -136,9 +136,11 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
+    image: vaksinku-app:${APP_VERSION:-latest}
     container_name: vaksinku_queue
     restart: unless-stopped
     working_dir: /var/www/html
+    entrypoint: []
     command: php artisan queue:work redis --sleep=3 --tries=3 --max-time=3600 --memory=256
     environment:
       APP_ENV: ${APP_ENV:-production}
@@ -152,11 +154,11 @@ services:
       QUEUE_CONNECTION: redis
     volumes:
       - .:/var/www/html
-      - app_storage:/var/www/html/storage/app
-      - app_logs:/var/www/html/storage/logs
     networks:
       - vaksinku_net
     depends_on:
+      app:
+        condition: service_healthy
       mysql:
         condition: service_healthy
       redis:
@@ -169,9 +171,11 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
+    image: vaksinku-app:${APP_VERSION:-latest}
     container_name: vaksinku_scheduler
     restart: unless-stopped
     working_dir: /var/www/html
+    entrypoint: []
     command: >
       sh -c "while true; do
         php artisan schedule:run --verbose --no-interaction >> /var/www/html/storage/logs/scheduler.log 2>&1;
@@ -179,11 +183,11 @@ services:
       done"
     volumes:
       - .:/var/www/html
-      - app_storage:/var/www/html/storage/app
-      - app_logs:/var/www/html/storage/logs
     networks:
       - vaksinku_net
     depends_on:
+      app:
+        condition: service_healthy
       mysql:
         condition: service_healthy
       redis:
@@ -230,18 +234,10 @@ services:
 volumes:
   mysql_data:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./docker/volumes/mysql
   redis_data:
     driver: local
   app_storage:
     driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./storage
   app_logs:
     driver: local
   nginx_logs:
