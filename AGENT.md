@@ -58,8 +58,8 @@ vaksinku/                          ← Root Laravel
 | Auth | WhatsApp OTP (Fonnte) |
 | PDF | DomPDF + SimpleQRCode |
 | Infra | Docker + GitHub Actions |
-| Design | Figma (MCP Developer Mode) |
-| API Eks | SATUSEHAT Kemenkes · Overpass OSM · Nominatim |
+| Design | Figma (MCP Developer Mode) + Stitch (MCP Server) |
+| API Eks | SATUSEHAT Kemenkes · Overpass OSM · Nominatim + Sementara (Untuk Vaksin, Faskes memakai seeder/dummy) |
 
 ---
 
@@ -114,8 +114,7 @@ Ini adalah token warna resmi proyek — gunakan **selalu**, jangan hardcode hex:
 ```
 User
  └── hasMany → AnggotaKeluarga
-                └── hasMany → RiwayatVaksin → belongsTo Vaksin
-                └── hasMany → JadwalVaksin  → belongsTo Vaksin
+                └── hasMany → JadwalVaksin  → belongsTo Vaksin # Migration merge untuk riwayat, agar lebih optimal.
                 └── hasMany → JadwalVaksin  → belongsTo FasilitasKesehatan
                 └── hasMany → SertifikatVaksin
 

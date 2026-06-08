@@ -13,11 +13,17 @@
 - [x] Tulis test `RiwayatTest.php`
 
 ## Tahap 3: Agregasi Data Dashboard
-- [ ] Update `DashboardController` untuk kalkulasi metrik
-- [ ] Update view `dashboard/index.blade.php` dengan metrik dinamis
+- [x] Update `DashboardController` untuk kalkulasi metrik
+- [x] Update view `dashboard/index.blade.php` dengan metrik dinamis
 - [ ] Tulis test `DashboardTest.php`
 
 ## Tahap 4: Persiapan Main System (Phase 3)
-- [ ] Verifikasi skema `FasilitasKesehatan` (nullable relations)
-- [ ] Buat interface skeleton `OverpassMapService`
-- [ ] Siapkan stub `FaskesApiController`
+- [x] Verifikasi skema `FasilitasKesehatan` (nullable relations) — model `app/Models/FasilitasKesehatan.php` ada
+- [ ] Buat interface skeleton `OverpassMapService` — belum ada, perlu implementasi di `app/Services`
+- [x] Siapkan stub `FaskesApiController` — endpoint pencarian sudah tersedia di `app/Http/Controllers/FaskesController.php`
+
+---
+**Catatan progres (2026-06-08):**
+- Dashboard (controller + view) sudah diimplementasikan; masih perlu menambahkan `DashboardTest`
+- Faskes: model dan controller API ada; layanan Overpass (external map sync) belum diimplementasikan
+- Service `VaksinScheduleService` sudah ada dan digunakan oleh `DashboardController` (periksa import `Str` pada file service)
